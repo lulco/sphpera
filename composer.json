@@ -2,7 +2,9 @@
     "name": "lulco/sphpera",
     "require": {
         "php": ">= 7.3",
-        "nikic/php-parser": "^4.6"
+        "nikic/php-parser": "^4.6",
+        "symfony/console": "^5.1",
+        "symfony/finder": "^5.1"
     },
     "autoload": {
         "psr-4": {
@@ -23,5 +25,6 @@
         "ext-pdo": "*",
         "phpunit/phpunit": "^9.2",
         "guzzlehttp/guzzle": "^7.0"
-    }
+    },
+    "bin": ["bin/sphpera"]
 }
