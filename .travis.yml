@@ -14,7 +14,7 @@ script:
   - composer remove squizlabs/php_codesniffer --dev
 
   - composer require phpstan/phpstan --dev
-  - vendor/bin/phpstan analyze src --level 7 --no-progress
+  - vendor/bin/phpstan analyze src --level max --no-progress
   - composer remove phpstan/phpstan --dev
 
   - composer require efabrica/php-extensions-finder --dev

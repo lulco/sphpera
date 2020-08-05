@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -63,19 +64,27 @@ class MyVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof ClassMethod) {
-            $name = $node->name;
-            $methodName = null;
-            if ($name) {
-                $methodName = $name->name;
-            }
-            $this->stack->actualMethod($methodName);
+            $this->stack->actualMethod($node->name->name);
             return null;
         }
 
         if ($node instanceof MethodCall) {
             // TODO resolve class name from variables etc
             $className = '';
-            $methodName = $node->name->name;
+
+            $nodeName = $node->name;
+            $methodName = null;
+            // TODO resolve final method name
+            if ($nodeName instanceof Identifier) {
+                $methodName = $nodeName->name;
+            } elseif ($nodeName instanceof Variable && is_string($nodeName->name)) {
+                $methodName = $nodeName->name;
+            }
+
+            if (!$methodName) {
+                return null;
+            }
+
             foreach ($this->config->getMethods() as $class => $methods) {
                 if (!preg_match('/' . str_replace('*', '(.*?)', $class) . '/', $className)) {
                     continue;
@@ -92,13 +101,19 @@ class MyVisitor extends NodeVisitorAbstract
         }
 
         if ($node instanceof FuncCall) {
-            $name = $node->name;
+            $nodeName = $node->name;
+            $functionName = null;
             // TODO resolve final name
-            if ($name instanceof Name) {
-                $functionName = implode('\\', $name->parts);
-            } elseif ($name instanceof Variable) {
-                $functionName = $name->name;
+            if ($nodeName instanceof Name) {
+                $functionName = implode('\\', $nodeName->parts);
+            } elseif ($nodeName instanceof Variable && is_string($nodeName->name)) {    // TODO get final function name if name->name is expr
+                $functionName = $nodeName->name;
             }
+
+            if (!$functionName) {
+                return null;
+            }
+
             foreach ($this->config->getFunctions() as $function => $score) {
                 if (preg_match('/' . str_replace('*', '(.*?)', $function) . '/', $functionName)) {
                     $this->stack->add($score);

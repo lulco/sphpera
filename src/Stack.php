@@ -4,20 +4,28 @@ namespace Sphpera;
 
 class Stack
 {
+    /** @var string|null */
     private $actualNamespace;
 
+    /** @var string|null */
     private $actualClass;
 
+    /** @var string|null */
     private $actualMethod;
 
+    /** @var bool */
     private $inCycle = false;
 
+    /** @var int|null */
     private $cycleStart = null;
 
+    /** @var int|null */
     private $cycleEnd = null;
 
+    /** @var int|null */
     private $cycleMultiplier = null;
 
+    /** @var array<string, array<string, float>> */
     private $scores = [];
 
     public function actualNamespace(?string $namespace): void
@@ -74,6 +82,9 @@ class Stack
         $this->scores[$className][$methodName] += $score;
     }
 
+    /**
+     * @return array<string, array<string, float>>
+     */
     public function getScores(): array
     {
         return $this->scores;

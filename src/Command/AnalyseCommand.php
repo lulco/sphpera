@@ -41,7 +41,7 @@ class AnalyseCommand extends Command
         $config = new Config($configuration);
         $scoreResolver = new ScoreResolver($config);
 
-        /** @var array $dirs */
+        /** @var string[] $dirs */
         $dirs = $input->getArgument('dirs');
         $slowest = 0;
         $slowestName = '';

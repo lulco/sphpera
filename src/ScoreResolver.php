@@ -2,6 +2,7 @@
 
 namespace Sphpera;
 
+use Exception;
 use PhpParser\Error;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeTraverserInterface;
@@ -20,22 +21,31 @@ class ScoreResolver
         $this->config = $config;
     }
 
+    /**
+     * @param string $path
+     * @return array<string, array<string, float>>
+     * @throws Exception
+     */
     public function resolve(string $path): array
     {
         $stack = new Stack();
         $traverser = $this->createTraverser($stack);
 
-        $code = file_get_contents($path);
-
+        $code = (string)file_get_contents($path);
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+
+        $ast = null;
         try {
             $ast = $parser->parse($code);
         } catch (Error $error) {
             // TODO log error
             return [];
         }
-        $traverser->traverse($ast);
+        if (!$ast) {
+            throw new Exception('Cannot parse file "' . $path . '"');
+        }
 
+        $traverser->traverse($ast);
         return $stack->getScores();
     }
 
