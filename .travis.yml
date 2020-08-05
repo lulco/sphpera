@@ -17,9 +17,10 @@ script:
   - vendor/bin/phpstan analyze src --level max --no-progress
   - composer remove phpstan/phpstan --dev
 
-  - composer require efabrica/php-extensions-finder --dev
-  - vendor/bin/php-extensions-finder check src tests
-  - composer remove efabrica/php-extensions-finder --dev
+#  this library currently does not support symfony/console 5.0
+#  - composer require efabrica/php-extensions-finder --dev
+#  - vendor/bin/php-extensions-finder check src tests
+#  - composer remove efabrica/php-extensions-finder --dev
 
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
 
