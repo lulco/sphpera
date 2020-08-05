@@ -9,22 +9,24 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Do_;
 use PhpParser\Node\Stmt\For_;
 use PhpParser\Node\Stmt\Foreach_;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\While_;
 use PhpParser\NodeVisitorAbstract;
+use Sphpera\Config\Config;
 use Sphpera\Stack;
 
 class MyVisitor extends NodeVisitorAbstract
 {
-    /** @var array */
+    /** @var Config */
     private $config;
 
     /** @var Stack */
     private $stack;
 
-    public function __construct(array $config, Stack $stack)
+    public function __construct(Config $config, Stack $stack)
     {
         $this->config = $config;
         $this->stack = $stack;
@@ -32,7 +34,7 @@ class MyVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node)
     {
-        if ($node instanceof Foreach_ || $node instanceof While_ || $node instanceof For_) {
+        if ($node instanceof Foreach_ || $node instanceof While_ || $node instanceof For_ || $node instanceof Do_) {
             // TODO get number of cycle iterations
             $this->stack->startCycle($node->getStartLine(), $node->getEndLine());
             return null;
@@ -41,17 +43,32 @@ class MyVisitor extends NodeVisitorAbstract
         $this->stack->checkCycle($node->getStartLine());
 
         if ($node instanceof Namespace_) {
-            $this->stack->actualNamespace(implode('\\', $node->name->parts));
+            $name = $node->name;
+            $namespace = null;
+            if ($name) {
+                $namespace = implode('\\', $name->parts);
+            }
+            $this->stack->actualNamespace($namespace);
             return null;
         }
 
         if ($node instanceof Class_) {
-            $this->stack->actualClass($node->name->name);
+            $name = $node->name;
+            $className = null;
+            if ($name) {
+                $className = $name->name;
+            }
+            $this->stack->actualClass($className);
             return null;
         }
 
         if ($node instanceof ClassMethod) {
-            $this->stack->actualMethod($node->name->name);
+            $name = $node->name;
+            $methodName = null;
+            if ($name) {
+                $methodName = $name->name;
+            }
+            $this->stack->actualMethod($methodName);
             return null;
         }
 
@@ -59,7 +76,7 @@ class MyVisitor extends NodeVisitorAbstract
             // TODO resolve class name from variables etc
             $className = '';
             $methodName = $node->name->name;
-            foreach ($this->config['methods'] as $class => $methods) {
+            foreach ($this->config->getMethods() as $class => $methods) {
                 if (!preg_match('/' . str_replace('*', '(.*?)', $class) . '/', $className)) {
                     continue;
                 }
@@ -70,7 +87,7 @@ class MyVisitor extends NodeVisitorAbstract
                     }
                 }
             }
-            $this->stack->add($this->config['default']);
+            $this->stack->add($this->config->getDefault());
             return null;
         }
 
@@ -82,13 +99,13 @@ class MyVisitor extends NodeVisitorAbstract
             } elseif ($name instanceof Variable) {
                 $functionName = $name->name;
             }
-            foreach ($this->config['functions'] as $function => $score) {
+            foreach ($this->config->getFunctions() as $function => $score) {
                 if (preg_match('/' . str_replace('*', '(.*?)', $function) . '/', $functionName)) {
                     $this->stack->add($score);
                     return null;
                 }
             }
-            $this->stack->add($this->config['default']);
+            $this->stack->add($this->config->getDefault());
             return null;
         }
 

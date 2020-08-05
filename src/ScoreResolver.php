@@ -7,14 +7,15 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeTraverserInterface;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
+use Sphpera\Config\Config;
 use Sphpera\Parser\Visitor\MyVisitor;
 
 class ScoreResolver
 {
-    /** @var array */
+    /** @var Config */
     private $config;
 
-    public function __construct(array $config)
+    public function __construct(Config $config)
     {
         $this->config = $config;
     }

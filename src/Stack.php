@@ -20,17 +20,17 @@ class Stack
 
     private $scores = [];
 
-    public function actualNamespace(string $namespace): void
+    public function actualNamespace(?string $namespace): void
     {
         $this->actualNamespace = $namespace;
     }
 
-    public function actualClass(string $class): void
+    public function actualClass(?string $class): void
     {
         $this->actualClass = $class;
     }
 
-    public function actualMethod(string $method): void
+    public function actualMethod(?string $method): void
     {
         $this->actualMethod = $method;
     }
@@ -62,13 +62,16 @@ class Stack
 
     public function add(float $score): void
     {
-        if (!isset($this->scores[$this->actualNamespace . '\\' . $this->actualClass][$this->actualMethod])) {
-            $this->scores[$this->actualNamespace . '\\' . $this->actualClass][$this->actualMethod] = 0;
+        $className = implode('\\', array_filter([$this->actualNamespace, $this->actualClass]));
+        $methodName = $this->actualMethod ?: '';
+
+        if (!isset($this->scores[$className][$methodName])) {
+            $this->scores[$className][$methodName] = 0;
         }
         if ($this->inCycle && $this->cycleMultiplier) {
             $score *= $this->cycleMultiplier;
         }
-        $this->scores[$this->actualNamespace . '\\' . $this->actualClass][$this->actualMethod] += $score;
+        $this->scores[$className][$methodName] += $score;
     }
 
     public function getScores(): array

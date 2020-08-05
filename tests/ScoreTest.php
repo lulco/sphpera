@@ -4,6 +4,7 @@ namespace SphperaTest;
 
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
+use Sphpera\Config\Config;
 use Sphpera\ScoreResolver;
 use SphperaTest\Sample\Sample;
 
@@ -11,8 +12,7 @@ class ScoreTest extends TestCase
 {
     public function testSample()
     {
-        $config = [
-            'default' => 0.0001,
+        $config = new Config([
             'functions' => [
                 'curl_exec' => 10,
                 'file_*' => 1,
@@ -22,7 +22,7 @@ class ScoreTest extends TestCase
                     'request' => 10,
                 ],
             ],
-        ];
+        ]);
 
         $expectedScores = [
             Sample::class => [
