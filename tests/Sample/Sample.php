@@ -31,18 +31,18 @@ class Sample
         return $output;
     }
 
-//    public function callApiWithGuzzle(): string
-//    {
-//        $client = new Client();
-//        $response = $client->get('https://myexample.com');
-//        return (string)$response->getBody();
-//    }
-//
-//    public function pdoSelect(): array
-//    {
-//        $pdo = new PDO('');
-//        return $pdo->query('SELECT * FROM tests WHERE is_deleted = 0')->fetchAll(PDO::FETCH_ASSOC);
-//    }
+    public function callApiWithGuzzle(): string
+    {
+        $client = new Client();
+        $response = $client->get('https://myexample.com');
+        return (string)$response->getBody();
+    }
+
+    public function pdoSelect(): array
+    {
+        $pdo = new PDO('');
+        return $pdo->query('SELECT * FROM tests WHERE is_deleted = 0')->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     public function doSomethingInForeach(array $input): array
     {
@@ -63,12 +63,12 @@ class Sample
         return $data;
     }
 
-//    public function doSomethingInForWithKnownNumberOfSteps(array $input): array
-//    {
-//        $data = [];
-//        for ($i = 0; $i < 5; $i++) {
-//            $data[] = strtolower($input[$i]);
-//        }
-//        return $data;
-//    }
+    public function doSomethingInForWithKnownNumberOfSteps(array $input): array
+    {
+        $data = [];
+        for ($i = 0; $i < 5; $i++) {
+            $data[] = strtolower($input[$i]);
+        }
+        return $data;
+    }
 }

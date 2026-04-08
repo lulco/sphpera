@@ -32,7 +32,7 @@ class ScoreResolver
         $traverser = $this->createTraverser($stack);
 
         $code = (string)file_get_contents($path);
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->createForNewestSupportedVersion();
 
         $ast = null;
         try {
